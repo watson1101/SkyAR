@@ -38,7 +38,7 @@ class SkyFilter():
         self.video_writer_cat = cv2.VideoWriter('demo-cat.mp4', cv2.VideoWriter_fourcc(*'MP4V'),
                                             20.0, (2*args.out_size_w, args.out_size_h))
 
-        if os.path.exists(args.output_dir) is False:
+        if args.save_jpgs and os.path.exists(args.output_dir) is False:
             os.mkdir(args.output_dir)
 
         self.save_jpgs = args.save_jpgs
@@ -47,7 +47,8 @@ class SkyFilter():
     def load_model(self):
 
         print('loading the best checkpoint...')
-        checkpoint = torch.load(os.path.join(self.ckptdir, 'best_ckpt.pt'))
+        checkpoint = torch.load(os.path.join(self.ckptdir, 'best_ckpt.pt'),
+                                map_location=None if torch.cuda.is_available() else device)
         # checkpoint = torch.load(os.path.join(self.ckptdir, 'last_ckpt.pt'))
         self.net_G.load_state_dict(checkpoint['model_G_state_dict'])
         self.net_G.to(device)
